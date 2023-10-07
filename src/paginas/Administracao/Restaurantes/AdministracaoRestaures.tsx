@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import IRestaurante from "../../../interfaces/IRestaurante";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import http from "../../../http";
 
 const AdministracaoRestaurantes = () => {
+    const navegate = useNavigate();
+
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([]);
 
     useEffect(() =>{
-        axios.get<IRestaurante[]>('http://localhost:8000/api/v2/restaurantes/')
+        http.get<IRestaurante[]>('restaurantes/')
         .then((resposta) =>{
             setRestaurantes(resposta.data)
         })
@@ -21,7 +23,7 @@ const AdministracaoRestaurantes = () => {
     const excluir = (restauranteExcluido: IRestaurante) =>{
         //http://localhost:8000/api/v2/restaurantes/
         
-        axios.delete(`http://localhost:8000/api/v2/restaurantes/${restauranteExcluido.id}/`)
+        http.delete(`restaurantes/${restauranteExcluido.id}/`)
         .then((resposta) =>{
             const listaRestaurante = restaurantes.filter(restaurante => restaurante.id !== restauranteExcluido.id)
             setRestaurantes([...listaRestaurante])
@@ -43,6 +45,9 @@ const AdministracaoRestaurantes = () => {
                         <TableCell>
                             Editar
                         </TableCell>
+                        <TableCell>
+                            Excluir
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -55,7 +60,9 @@ const AdministracaoRestaurantes = () => {
                             {restaurante.nome}
                         </TableCell>
                         <TableCell>
-                            [ <Link to={`/admin/restaurantes/${restaurante.id}`}> editar</Link>]
+                            <Button variant="outlined" color="primary" onClick={() => navegate(`/admin/restaurante/${restaurante.id}`)}>
+                                        Editar
+                                </Button>
                         </TableCell>
                         <TableCell>
                             <Button variant="outlined" color="error" onClick={() => excluir(restaurante)}>
